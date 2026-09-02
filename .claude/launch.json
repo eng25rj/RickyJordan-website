@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "rickyjordan",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["/Users/rickyjordan/Documents/rickyjordan-site/devserver.py", "8721", "/Users/rickyjordan/Documents/rickyjordan-site"],
+      "port": 8721
+    }
+  ]
+}
