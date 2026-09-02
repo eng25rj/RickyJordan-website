@@ -138,16 +138,26 @@ h1,h2,h3{font-weight:800;letter-spacing:-.03em;line-height:1.04}
   display:grid;place-items:center;
   animation:curtainOut .7s var(--ease) 2.1s forwards;
 }
-.curtain .stack{display:grid;place-items:center;gap:1.6rem}
+.curtain .stack{display:grid;place-items:center;gap:1.5rem}
 .curtain .cbadge{position:relative;width:clamp(120px,14vw,168px);animation:markIn .55s var(--ease) both}
-.curtain .cbadge > svg{width:100%;height:auto}
-.curtain .tach{position:absolute;inset:-17%;width:134%;height:134%}
-.curtain .tach circle{
-  fill:none;stroke:var(--red);stroke-width:2;stroke-linecap:round;
-  stroke-dasharray:1;stroke-dashoffset:1;opacity:.85;
-  animation:tachSweep .9s var(--ease-in-out) .25s both;
+.curtain .cbadge > svg{width:100%;height:auto;display:block}
+
+/* the ignition bar — replaces a ring that never quite centered on the
+   crest's non-square bounds. A straight fill reads cleanly at any size. */
+.ignition-bar{
+  width:clamp(150px,18vw,220px);height:3px;border-radius:2px;overflow:hidden;
+  background:var(--hairline-strong);position:relative;
+  opacity:0;animation:barIn .25s linear .3s forwards;
 }
-@keyframes tachSweep{to{stroke-dashoffset:0}}
+.ignition-bar .fill{
+  display:block;height:100%;width:0%;border-radius:2px;
+  background:linear-gradient(90deg,var(--red-deep),var(--red) 60%,var(--ember));
+  box-shadow:0 0 10px rgba(255,89,75,.55);
+  animation:barFill .9s var(--ease-in-out) .35s forwards;
+}
+@keyframes barIn{to{opacity:1}}
+@keyframes barFill{to{width:100%}}
+@media (prefers-reduced-motion:reduce){.ignition-bar{display:none}}
 .syschk{display:grid;gap:.35rem;font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--paper-faint);text-align:left}
 .syschk span{opacity:0;animation:chk .3s var(--ease) both}
 .syschk span:nth-child(1){animation-delay:.75s}
@@ -279,30 +289,50 @@ h1,h2,h3{font-weight:800;letter-spacing:-.03em;line-height:1.04}
   font-family:var(--mono);font-size:.66rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--paper-faint);
 }
 .tblock .thead b{color:var(--red)}
-.tgrid{display:grid;grid-template-columns:.9fr 1.7fr 1.4fr}
-.tcell{padding:1.15rem 1.2rem 1.25rem;border-right:1px solid var(--hairline);position:relative;min-height:7.6rem;display:flex;flex-direction:column;justify-content:flex-end}
+.tgrid{display:grid;grid-template-columns:1fr 2.5fr}
+/* The key sits in flow above the value — nothing is absolutely positioned,
+   so a tall value can never run into its own label. Values sit on a shared
+   floor via margin-top:auto. */
+.tcell{
+  padding:clamp(1.3rem,2.2vw,1.9rem) clamp(1.2rem,2vw,1.7rem);
+  border-right:1px solid var(--hairline);min-height:9rem;
+  display:flex;flex-direction:column;gap:1.1rem;
+}
 .tcell:last-child{border-right:0}
-.tcell .k{position:absolute;top:.7rem;left:1.2rem;font-family:var(--mono);font-size:.6rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--paper-faint)}
-.tcell .v{font-size:var(--step-2);font-weight:800;letter-spacing:-.025em;line-height:1.08}
-.tcell .v small{display:block;font-size:var(--step--1);font-weight:500;letter-spacing:0;color:var(--paper-soft);margin-top:.35rem}
+.tcell .k{font-family:var(--mono);font-size:.6rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--paper-faint)}
+.tcell .v{font-size:var(--step-2);font-weight:800;letter-spacing:-.025em;line-height:1.12;margin-top:auto}
+.tcell .v small{display:block;font-size:var(--step--1);font-weight:500;letter-spacing:0;color:var(--paper-soft);margin-top:.45rem;line-height:1.55}
 .tcell .v .rd{color:var(--red)}
 .tcell .v .unit{font-family:var(--mono);font-size:.55em;font-weight:600;color:var(--paper-faint);margin-left:.15em}
-.tcell.orgs .logos{display:flex;gap:1.6rem;align-items:center;flex-wrap:wrap}
-.tcell.orgs img{height:19px;width:auto;filter:grayscale(1) brightness(0) invert(.92);opacity:.85;transition:opacity .3s}
-.tcell.orgs img.dyn{height:25px}
-.tcell.orgs:hover img{opacity:1}
 .tgrid-b{display:grid;grid-template-columns:1.55fr 1fr 1.45fr;border-top:1px solid var(--hairline)}
-.tgrid-b .tcell{min-height:6.2rem}
-.route{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.tgrid-b .tcell{min-height:7.5rem}
+.route{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:auto}
 .route b{font-family:var(--mono);font-size:var(--step-0);font-weight:700;letter-spacing:.04em}
 .route svg{width:24px;height:12px;overflow:visible;flex:none}
 .route svg path{stroke:var(--red);stroke-width:2;fill:none;stroke-linecap:round}
-@media(max-width:900px){
-  .tgrid,.tgrid-b{grid-template-columns:1fr 1fr}
-  .tcell{border-bottom:1px solid var(--hairline)}
-  .tcell:nth-child(2n){border-right:0}
+/* ---- the organization banner: full-width row across the sheet's foot ---- */
+.tbanner{
+  border-top:1px solid var(--hairline-strong);
+  padding:clamp(2.2rem,4.5vw,3.5rem) var(--gutter);
+  display:flex;flex-direction:column;align-items:center;gap:clamp(1.4rem,2.5vw,2rem);
+  background:
+    radial-gradient(60% 130% at 50% 100%,rgba(255,89,75,.07),transparent 70%),
+    linear-gradient(180deg,transparent,rgba(0,0,0,.28));
 }
-@media(max-width:560px){.tgrid,.tgrid-b{grid-template-columns:1fr}.tcell{border-right:0}}
+.tbanner .k{font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--paper-faint);display:flex;align-items:center;gap:1em}
+.tbanner .k::before,.tbanner .k::after{content:"";width:2.2em;height:1px;background:var(--hairline-strong)}
+.tbanner .logos{display:flex;align-items:center;justify-content:center;gap:clamp(2.2rem,6vw,4.5rem);flex-wrap:wrap}
+.tbanner img{height:clamp(30px,4.2vw,44px);width:auto;filter:grayscale(1) brightness(0) invert(.92);opacity:.9;transition:opacity .3s,transform .5s var(--ease)}
+.tbanner img.dyn{height:clamp(40px,5.6vw,58px)}
+.tbanner img:hover{opacity:1;transform:translateY(-2px)}
+.tbanner .sep{width:5px;height:5px;background:var(--red);rotate:45deg;flex:none;opacity:.85}
+@media(max-width:900px){
+  .tgrid,.tgrid-b{grid-template-columns:1fr}
+  .tcell{border-right:0;border-bottom:1px solid var(--hairline);min-height:0}
+  .tgrid-b .tcell{min-height:0}
+  .tgrid-b .tcell:last-child,.tgrid .tcell:last-child{border-bottom:0}
+  .tgrid .tcell:last-child{border-bottom:1px solid var(--hairline)}
+}
 
 /* ------------------------------------------------------------- signal divider */
 .signal{max-width:64rem;margin-inline:auto;padding:clamp(1.5rem,4vw,3rem) var(--gutter)}
