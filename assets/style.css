@@ -122,8 +122,11 @@ h1,h2,h3{font-weight:800;letter-spacing:-.03em;line-height:1.04}
 [data-fade].in{opacity:1;transform:none}
 [data-unveil]{opacity:0;transform:translateY(14px) scale(.985);transition:opacity 1s var(--ease),transform 1s var(--ease);transition-delay:var(--d,0s)}
 [data-unveil].in{opacity:1;transform:none}
+/* enters from stage right — same ease-out as every other reveal, horizontal instead of vertical */
+[data-fade-r]{opacity:0;transform:translateX(64px);transition:opacity 1.1s var(--ease),transform 1.1s var(--ease);transition-delay:var(--d,0s)}
+[data-fade-r].in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){
-  [data-fade],[data-fade].in,[data-unveil],[data-unveil].in{opacity:1;transform:none;transition:none}
+  [data-fade],[data-fade].in,[data-unveil],[data-unveil].in,[data-fade-r],[data-fade-r].in{opacity:1;transform:none;transition:none}
 }
 
 /* ---------------------------------------------------------------------
@@ -139,8 +142,28 @@ h1,h2,h3{font-weight:800;letter-spacing:-.03em;line-height:1.04}
   animation:curtainOut .7s var(--ease) 2.1s forwards;
 }
 .curtain .stack{display:grid;place-items:center;gap:1.5rem}
-.curtain .cbadge{position:relative;width:clamp(120px,14vw,168px);animation:markIn .55s var(--ease) both}
-.curtain .cbadge > svg{width:100%;height:auto;display:block}
+.curtain .cbadge{position:relative;width:clamp(120px,14vw,168px);animation:markIn .55s var(--ease) both,badgeZoom .65s var(--ease-in-out) 1.65s both}
+.curtain .cbadge > img{width:100%;height:auto;display:block}
+/* a light sweep confined to the badge's own silhouette via mask, timed to
+   glint across it right as it grows and fades — reads as a "zoom into the
+   metal" rather than a plain scale */
+.curtain .cbadge::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(115deg,transparent 44%,rgba(255,255,255,.95) 50%,transparent 56%);
+  background-size:300% 300%;
+  -webkit-mask-image:url(img/rj-logo.png);-webkit-mask-size:100% 100%;-webkit-mask-repeat:no-repeat;
+  mask-image:url(img/rj-logo.png);mask-size:100% 100%;mask-repeat:no-repeat;
+  mix-blend-mode:screen;opacity:0;
+  animation:badgeShimmer .65s linear 1.65s both;
+}
+@keyframes badgeZoom{to{transform:scale(1.4);opacity:0}}
+@keyframes badgeShimmer{
+  0%{opacity:0;background-position:-40% 0}
+  18%{opacity:1}
+  60%{opacity:.85}
+  100%{opacity:0;background-position:140% 0}
+}
+@media (prefers-reduced-motion:reduce){.curtain .cbadge,.curtain .cbadge::after{animation:none}}
 
 /* the ignition bar — replaces a ring that never quite centered on the
    crest's non-square bounds. A straight fill reads cleanly at any size. */
@@ -183,13 +206,20 @@ h1,h2,h3{font-weight:800;letter-spacing:-.03em;line-height:1.04}
 .bar{
   position:fixed;inset:0 0 auto 0;z-index:800;
   display:flex;align-items:center;justify-content:space-between;gap:1rem;
-  padding:.95rem var(--gutter);
+  padding:1.3rem var(--gutter);
   border-bottom:1px solid transparent;
   background:linear-gradient(rgba(8,7,7,.72),transparent);
   transition:background var(--dur) var(--ease),border-color var(--dur) var(--ease),padding var(--dur) var(--ease);
 }
-.bar.stuck{background:rgba(11,10,10,.86);border-bottom-color:var(--hairline);padding-block:.55rem;backdrop-filter:blur(10px)}
+.bar.stuck{background:rgba(11,10,10,.86);border-bottom-color:var(--hairline);padding-block:.8rem;backdrop-filter:blur(10px)}
 .bar .id{display:flex;align-items:center;gap:.8rem;font-weight:700;font-size:1rem;letter-spacing:-.01em}
+/* stand-in for Eurostile Extended Black Italic (licensed; the copy supplied
+   was corrupted and unparseable) — a free heavy italic pushed wider with
+   letter-spacing + scaleX to read as an extended cut, not a plain sans */
+.bar .id span{
+  font-family:'Exo 2',var(--f);font-weight:900;font-style:italic;font-size:1.35rem;
+  letter-spacing:.02em;transform:scaleX(1.08);transform-origin:left center;display:inline-block;
+}
 .bar nav{display:flex;gap:clamp(.9rem,2.4vw,2rem)}
 .bar nav a{position:relative;font-family:var(--mono);font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;opacity:.66;transition:opacity .3s,color .3s}
 .bar nav a::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:1px;background:var(--red);transform:scaleX(0);transform-origin:100% 50%;transition:transform .4s var(--ease)}
@@ -208,7 +238,10 @@ h1,h2,h3{font-weight:800;letter-spacing:-.03em;line-height:1.04}
 .checker{height:10px;background:var(--checker);background-size:14px 14px;opacity:.16}
 
 /* ------------------------------------------------------------- hero */
-.hero{position:relative;min-height:100svh;display:flex;align-items:center;overflow:hidden;background:var(--ink)}
+.hero{
+  position:relative;min-height:100svh;display:flex;align-items:center;overflow:hidden;background:var(--ink);
+  --port-r:clamp(1.5rem,5vw,5.5rem);--port-w:clamp(220px,24vw,360px);
+}
 .hero .field{position:absolute;inset:0;z-index:0}
 .hero .field .grid{
   position:absolute;inset:-12%;
@@ -231,8 +264,23 @@ h1,h2,h3{font-weight:800;letter-spacing:-.03em;line-height:1.04}
   position:absolute;right:clamp(-6%,2vw,5%);top:50%;translate:0 -50%;width:min(46vw,620px);opacity:.92;
   mask-image:linear-gradient(90deg,transparent,#000 26%);
   -webkit-mask-image:linear-gradient(90deg,transparent,#000 26%);
+  transition:right .3s var(--ease),width .3s var(--ease);
 }
-.hero .copy{position:relative;z-index:2;padding-top:5.5rem}
+/* the headshot sits on top past this width, so the diagram moves into the
+   gap between the text column and the photo instead of hiding behind it */
+@media(min-width:901px){
+  .hero .constellation{right:calc(var(--port-r) + var(--port-w) + 2rem);width:min(26vw,400px)}
+}
+.hero .copy{position:relative;z-index:2;padding-top:5.5rem;text-align:left;margin-inline:0 auto;max-width:min(var(--maxw),44rem)}
+@media(min-width:901px){.hero .copy{max-width:min(var(--maxw),40rem)}}
+.hero-portrait{
+  position:absolute;z-index:1;right:var(--port-r);top:50%;translate:0 -50%;
+  width:var(--port-w);aspect-ratio:3/3.6;border-radius:var(--radius);overflow:hidden;
+  background:var(--ink-2);box-shadow:0 30px 60px -20px rgba(0,0,0,.65);
+}
+.hero-portrait img{width:100%;height:112%;margin-top:-6%;object-fit:cover}
+.hero-portrait::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(11,10,10,.55),transparent 46%),linear-gradient(200deg,rgba(255,89,75,.1),transparent 55%)}
+@media(max-width:900px){.hero-portrait{display:none}}
 .hero h1{font-size:var(--step-5);max-width:15ch;margin-block:.6rem 1.15rem}
 .hero .sub{max-width:46ch;margin-bottom:2.2rem}
 .cta-row{display:flex;gap:1rem;flex-wrap:wrap;align-items:center}

@@ -16,7 +16,7 @@
   if (!location.hash) scrollTo(0, 0);
 
   /* ---------------- fades + unveils ---------------- */
-  var els = doc.querySelectorAll('[data-fade],[data-unveil]');
+  var els = doc.querySelectorAll('[data-fade],[data-unveil],[data-fade-r]');
   if ('IntersectionObserver' in window && !still) {
     var io = new IntersectionObserver(function (es) {
       es.forEach(function (e) {
